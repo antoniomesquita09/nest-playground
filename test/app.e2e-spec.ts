@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+
 import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
@@ -23,16 +24,55 @@ describe('AppController (e2e)', () => {
   });
 
   it('/cats (GET)', () => {
+    const resultCats = {
+      list: ['Felicia', 'Tom'],
+    };
     return request(app.getHttpServer())
       .get('/cats')
       .expect(200)
-      .expect('Miau!');
+      .expect(resultCats);
+  });
+
+  it('/cats/:id (GET)', () => {
+    const mockedId = '321';
+    return request(app.getHttpServer())
+      .get(`/cats/${mockedId}`)
+      .expect(200)
+      .expect({
+        id: mockedId,
+        name: 'Tom',
+        breed: 'Miau!',
+        age: 4,
+      });
   });
 
   it('/cats (POST)', () => {
+    const mockedCat = {
+      age: 1,
+      breed: 'vira-lata',
+      name: 'Tom',
+    };
     return request(app.getHttpServer())
       .post('/cats')
-      .expect(201)
-      .expect('Miau created!');
+      .send(mockedCat)
+      .expect(200)
+      .expect({
+        id: '1',
+        ...mockedCat,
+      });
+  });
+
+  it('/cats (PUT)', () => {
+    const mockedCat = {
+      id: '1',
+      age: 1,
+      breed: 'vira-lata',
+      name: 'Tom',
+    };
+    return request(app.getHttpServer())
+      .put('/cats')
+      .send(mockedCat)
+      .expect(200)
+      .expect(mockedCat);
   });
 });

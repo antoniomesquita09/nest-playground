@@ -1,12 +1,27 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { CatsController } from './cats/cats.controller';
-import { CatsService } from './cats/cats.service';
-import { AppService } from './app.service';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+
+import { logger } from './common/middleware/logger.middleware';
+import { CatsModule } from './cats/cats.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-  imports: [],
-  controllers: [AppController, CatsController],
-  providers: [AppService, CatsService],
+  imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
+    CatsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(logger).forRoutes('cats');
+  }
+}
