@@ -24,7 +24,7 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/throttler": "^2.0.0",
+    "@nestjs/throttler": "^2.0.1",
     "csurf": "^1.11.0",
     "helmet": "^4.6.0",
     "reflect-metadata": "^0.1.13",
